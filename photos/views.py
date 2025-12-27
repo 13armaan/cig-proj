@@ -32,15 +32,15 @@ class PhotoViewSet(viewsets.ModelViewSet):
         return PhotoSerializer
 
     
-    def perform_create(self, serializer):
-        photo= serializer.save(uploaded_by=self.request.user)
-        #generate thumbnail and watermark (by chaining)
-        from photos.tasks import generate_thumbnail, generate_watermark
-        from celery import chain
-        chain(
-            generate_thumbnail.s(photo.photo_id),
-            generate_watermark.s()
-        ).delay()
+    # def perform_create(self, serializer):
+    #     photo= serializer.save(uploaded_by=self.request.user)
+    #     #generate thumbnail and watermark (by chaining)
+    #     from photos.tasks import generate_thumbnail, generate_watermark
+    #     from celery import chain
+    #     chain(
+    #         generate_thumbnail.s(photo.photo_id),
+    #         generate_watermark.s()
+    #     ).delay()
 
     # batch upload endpoint
     @action(

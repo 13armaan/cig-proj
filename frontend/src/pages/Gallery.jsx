@@ -9,6 +9,10 @@ export default function Gallery() {
   const [tagInput, setTagInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  //loading comments
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
+  
 
   const fetchPhotos = async () => {
     try {
@@ -82,6 +86,52 @@ export default function Gallery() {
     fetchPhotos();
   };
 
+  //load comments function
+  const fetchComments = async () => {
+    try {
+      const res = await api.get(
+        `/photos/${selectedPhoto.photo_id}/comments/`
+      );
+      setComments(res.data);
+    } catch (err) {
+      console.error("Failed to load comments", err);
+    }
+  };
+  useEffect(() => {
+    if (!selectedPhoto) return;
+
+
+
+    fetchComments();
+  }, [selectedPhoto]);
+  //submit comment
+  const handleAddComment = async () => {
+    if (!commentInput.trim()) return;
+
+    try {
+      
+
+      await api.post(
+        `/photos/${selectedPhoto.photo_id}/comments/`,
+        { content: commentInput }
+      );
+
+      setCommentInput("");
+
+      fetchComments();
+
+    } catch (err) {
+      console.error("Failed to post comment", err);
+      alert("Failed to add comment");
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+
+
+
+
   if (loading) return <p className="loading">Loading...</p>;
 
   return (
@@ -146,7 +196,30 @@ export default function Gallery() {
               ))}
             </div>
 
-            {/* INPUT (ENTER ONLY) */}
+            {/* COMMENTS */}
+            <div className="comments-section">
+              <h4>Comments</h4>
+
+              <div className="comments-list">
+                {comments.length === 0 && (
+                  <p className="no-comments">No comments yet</p>
+                )}
+
+                {comments.map((comment) => (
+                  <div key={comment.id} className="comment">
+                    <strong>{comment.user}</strong>
+                    <p>{comment.content}</p>
+                    <span className="comment-time">
+                      {new Date(comment.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
+
+            {/* tags INPUT (ENTER ONLY) */}
             <input
               className="tag-input"
               placeholder="Add tag and press Enter"
@@ -155,6 +228,21 @@ export default function Gallery() {
               onKeyDown={handleTagKeyDown}
               autoFocus
             />
+            {/* Comments INPUT (ENTER ONLY) */}
+            <div className="comment-input">
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+              />
+
+
+            </div>
+
+
+
           </div>
         </div>
       )}
