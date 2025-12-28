@@ -20,6 +20,10 @@ class IsPhotographer(BasePermission):
 class IsCoordinator(BasePermission):
     def has_permission(self, request, view):
         return request.user.roles.filter(name="Event Coordinator").exists()
+    
+class IsImgMember(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.roles.filter(name="IMG Member").exists()
 
 
 class ReadOnlyForGuests(BasePermission):

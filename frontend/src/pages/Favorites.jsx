@@ -276,6 +276,14 @@ export default function Gallery() {
 
 
                         </div>
+                        <button
+                            onClick={() =>
+                                window.location.href =
+                                `http://127.0.0.1:8000/api/photos/${selectedPhoto.photo_id}/download/`
+                            }
+                        >
+                            Download
+                        </button>
 
 
 

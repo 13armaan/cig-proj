@@ -209,80 +209,92 @@ export default function Gallery() {
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={selectedPhoto.watermark_img}
-              className="modal-image"
-              alt=""
-            />
+            <div className="modal-body">
 
-            {/* FAV */}
-            <button
-              className="favorite-btn"
-              onClick={isFavorite ? handleUnfavorite : handleFavorite}
-            >
-              {isFavorite ? "★ Favorited" : "☆ Add to Favorites"}
-            </button>
-            {/* TAGS */}
-
-            <div className="tags">
-              {selectedPhoto.tags?.map(tag => (
-                <span key={tag.id} className="tag">
-                  {tag.name}
-                  <button onClick={() => removeTag(tag.name)}>×</button>
-                </span>
-              ))}
-            </div>
-
-            {/* COMMENTS */}
-            <div className="comments-section">
-              <h4>Comments</h4>
-
-              <div className="comments-list">
-                {comments.length === 0 && (
-                  <p className="no-comments">No comments yet</p>
-                )}
-
-                {comments.map((comment) => (
-                  <div key={comment.id} className="comment">
-                    <strong>{comment.user}</strong>
-                    <p>{comment.content}</p>
-                    <span className="comment-time">
-                      {new Date(comment.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-
-
-            {/* tags INPUT (ENTER ONLY) */}
-            <input
-              className="tag-input"
-              placeholder="Add tag and press Enter"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={handleTagKeyDown}
-              autoFocus
-            />
-            {/* Comments INPUT (ENTER ONLY) */}
-            <div className="comment-input">
-              <input
-                type="text"
-                placeholder="Add a comment..."
-                value={commentInput}
-                onChange={(e) => setCommentInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+              <img
+                src={selectedPhoto.watermark_img}
+                className="modal-image"
+                alt=""
               />
 
+              {/* FAV */}
+              <button
+                className="favorite-btn"
+                onClick={isFavorite ? handleUnfavorite : handleFavorite}
+              >
+                {isFavorite ? "★ Favorited" : "☆ Add to Favorites"}
+              </button>
+              {/* TAGS */}
+
+              <div className="tags">
+                {selectedPhoto.tags?.map(tag => (
+                  <span key={tag.id} className="tag">
+                    {tag.name}
+                    <button onClick={() => removeTag(tag.name)}>×</button>
+                  </span>
+                ))}
+              </div>
+
+              {/* COMMENTS */}
+              <div className="comments-section">
+                <h4>Comments</h4>
+
+                <div className="comments-list">
+                  {comments.length === 0 && (
+                    <p className="no-comments">No comments yet</p>
+                  )}
+
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="comment">
+                      <strong>{comment.user}</strong>
+                      <p>{comment.content}</p>
+                      <span className="comment-time">
+                        {new Date(comment.created_at).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+
+
+              {/* tags INPUT (ENTER ONLY) */}
+              <input
+                className="tag-input"
+                placeholder="Add tag and press Enter"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                autoFocus
+              />
+              {/* Comments INPUT (ENTER ONLY) */}
+              <div className="comment-input">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+                />
+
+
+              </div>
+              <button
+                onClick={() =>
+                  window.location.href =
+                  `http://127.0.0.1:8000/api/photos/${selectedPhoto.photo_id}/download/`
+                }
+              >
+                Download
+              </button>
+
+
+
 
             </div>
-
-
-
           </div>
         </div>
       )}
-    </div>
-  );
+        </div>
+      );
 }

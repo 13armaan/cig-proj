@@ -6,7 +6,7 @@ from .models import Photo, Tag, PhotoFavorite
 from .serializers import PhotoSerializer,PhotoListSerializer, TagSerializer
 
 from rest_framework.permissions import IsAuthenticated
-from accounts.permissions import IsVerified, IsPhotographer,IsAdmin
+from accounts.permissions import IsVerified, IsPhotographer,IsAdmin,IsImgMember,IsCoordinator
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -186,8 +186,34 @@ class PhotoViewSet(viewsets.ModelViewSet):
         serializer = PhotoListSerializer(photos, many=True)
         return Response(serializer.data)
 
+    #add download endpoint(everyone except guest)
+    from django.http import FileResponse
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[
+        IsAuthenticated,
+        IsImgMember,IsAdmin,IsPhotographer,IsCoordinator  # 👈 your custom permission
+    ]
+    
+    )
+    
+    def download(self, request, pk=None):
+        photo = self.get_object()
 
+        
+        if photo.original_img:
+            return self.FileResponse(
+                photo.original_img.open("rb"),
+                as_attachment=True,
+                filename=f"photo_{photo.photo_id}_original.jpg"
+            )
+
+        return Response(
+            {"error": "Original image not available"},
+            status=status.HTTP_404_NOT_FOUND
+        )
     
 
-    
+
    

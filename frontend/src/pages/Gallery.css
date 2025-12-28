@@ -43,14 +43,24 @@
 
 .modal-content {
   background: #1b1b1b;
-  padding: 20px;
   border-radius: 16px;
-  max-width: 600px;
+  max-width: 700px;
   width: 90%;
+  max-height: 90vh;          /* 🔑 LIMIT HEIGHT */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;          /* 🔑 PREVENT OUTER SCROLL */
+}
+
+.modal-body {
+  overflow-y: auto;          /* 🔑 SCROLL INSIDE MODAL */
+  padding: 20px;
 }
 
 .modal-image {
-  width: 100%;
+  max-width: 100%;
+  max-height: 65vh;          /* 🔑 PREVENT GIANT IMAGES */
+  object-fit: contain;
   border-radius: 12px;
   margin-bottom: 12px;
 }
