@@ -6,11 +6,18 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ["id", "name"]
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "email"]
 
 class PhotoSerializer(serializers.ModelSerializer):
     uploaded_by = serializers.StringRelatedField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    users_tagged = serializers.StringRelatedField(many=True, read_only=True)
+    users_tagged = SimpleUserSerializer(many=True, read_only=True)
     is_favorite=serializers.SerializerMethodField()
 
     class Meta:

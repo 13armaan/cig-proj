@@ -22,7 +22,7 @@ export default function Gallery() {
 
   const fetchPhotos = async () => {
     try {
-      const res = await api.get("/photos/");
+      const res = await api.get("/photos/tagged");
       // console.log(res.data.next)
       setNextPage(res.data.next);
       console.log(nextPage);
@@ -222,7 +222,7 @@ export default function Gallery() {
 
           >
             <img
-              src={photo.thumbnail_img}
+              src={`http://127.0.0.1:8000${photo.thumbnail_img}`}
               className="gallery-img"
               alt=""
             />

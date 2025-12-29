@@ -8,6 +8,8 @@ from .serializers import PhotoSerializer,PhotoListSerializer, TagSerializer
 from rest_framework.permissions import IsAuthenticated
 from accounts.permissions import IsVerified, IsPhotographer,IsAdmin, IsNotGuest
 from django.http import FileResponse
+from django.contrib.auth import get_user_model
+User = get_user_model()
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -210,3 +212,71 @@ class PhotoViewSet(viewsets.ModelViewSet):
             {"error": "Original image not available"},
             status=status.HTTP_404_NOT_FOUND
         )
+    
+    #endpoint to get photos where the user is tagged in
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAuthenticated, IsVerified]
+    )
+    def tagged(self, request):
+        photos = request.user.tagged_photos.all().order_by("-photo_id")
+
+        page = self.paginate_queryset(photos)
+        if page is not None:
+            serializer = PhotoListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = PhotoListSerializer(photos, many=True)
+        return Response(serializer.data)
+    #add tagged user
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated, IsVerified]
+    )
+    def add_user_tag(self, request, pk=None):
+        photo = self.get_object()
+        user_id = request.data.get("user_id")
+
+        if not user_id:
+            return Response(
+                {"error": "user_id required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(id=user_id)
+            photo.users_tagged.add(user)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        
+        return Response({"message": "User tagged successfully"})
+        
+    #remove tagged user
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated, IsVerified]
+        )
+    def remove_user_tag(self, request, pk=None):
+        photo = self.get_object()
+        user_id = request.data.get("user_id")
+
+        try:
+            user = User.objects.get(id=user_id)
+            photo.users_tagged.remove(user)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response({"message": "User untagged successfully"})
+
+        
+

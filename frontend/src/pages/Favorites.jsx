@@ -3,200 +3,246 @@ import api from "../services/api";
 import "./Gallery.css";
 
 export default function Gallery() {
-    const [photos, setPhotos] = useState([]);
-    const [nextPage, setNextPage] = useState(null);
-    const [selectedPhoto, setSelectedPhoto] = useState(null);
-    const [tagInput, setTagInput] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    //comments
-    const [comments, setComments] = useState([]);
-    const [commentInput, setCommentInput] = useState("");
-    //favorite
-    const [isFavorite, setIsFavorite] = useState(false);
-
-    const fetchPhotos = async () => {
-        try {
-            const res = await api.get("/photos/favorites");
-            // console.log(res.data.next)
-            setNextPage(res.data.next);
-            console.log(nextPage);
-            setPhotos(res.data.results);
-        } catch {
-            alert("Failed to load photos");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPhotos();
-    }, []);
-
-
-    //load-more logic
-    const loadMorePhotos = async () => {
-        if (!nextPage) return;
-
-        try {
-            setLoadingMore(true);
-            const res = await api.get(nextPage);
-            setPhotos(prev => [...prev, ...res.data.results]);
-            setNextPage(res.data.next);
-        } catch {
-            alert("Failed to load more photos");
-        } finally {
-            setLoadingMore(false);
-        }
-    };
-
-
-    // ADD TAG ON ENTER
-    const handleTagKeyDown = async (e) => {
-        if (e.key !== "Enter") return;
-
-        e.preventDefault();
-        if (!tagInput.trim()) return;
-
-        const tags = tagInput
-            .split(",")
-            .map(t => t.trim())
-            .filter(Boolean);
-
-        for (let name of tags) {
-            await api.post(
-                `/photos/${selectedPhoto.photo_id}/add_tag/`,
-                { tag: name }
-            );
-        }
-
-        const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
-        setSelectedPhoto(res.data);
-        setTagInput("");
-        fetchPhotos();
-    };
-
-    const removeTag = async (name) => {
-        await api.post(
-            `/photos/${selectedPhoto.photo_id}/remove_tag/`,
-            { tag: name }
-        );
-
-        const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
-        setSelectedPhoto(res.data);
-        fetchPhotos();
-    };
-
-    //load comments function
-    const fetchComments = async () => {
-        try {
-            const res = await api.get(
-                `/photos/${selectedPhoto.photo_id}/comments/`
-            );
-            setComments(res.data);
-        } catch (err) {
-            console.error("Failed to load comments", err);
-        }
-    };
-    useEffect(() => {
-        if (!selectedPhoto) return;
+  const [photos, setPhotos] = useState([]);
+  const [nextPage, setNextPage] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [tagInput, setTagInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  //comments
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
+  //favorite
+  const [isFavorite, setIsFavorite] = useState(false);
+  //tagged users
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
 
 
 
-        fetchComments();
-    }, [selectedPhoto]);
-    //submit comment
-    const handleAddComment = async () => {
-        if (!commentInput.trim()) return;
+  const fetchPhotos = async () => {
+    try {
+      const res = await api.get("/photos/favorites");
+      // console.log(res.data.next)
+      setNextPage(res.data.next);
+      console.log(nextPage);
+      setPhotos(res.data.results);
+    } catch {
+      alert("Failed to load photos");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        try {
-
-
-            await api.post(
-                `/photos/${selectedPhoto.photo_id}/comments/`,
-                { content: commentInput }
-            );
-
-            setCommentInput("");
-
-            fetchComments();
-
-        } catch (err) {
-            console.error("Failed to post comment", err);
-            alert("Failed to add comment");
-        } 
-    };
-    //fetch isfavorite
-    useEffect(() => {
-        if (!selectedPhoto) return;
-
-        // TEMP logic: infer favorite state from backend later
-        setIsFavorite(selectedPhoto.is_favorite);
-    }, [selectedPhoto]);
-    //handle favorite and un favorite
-    const handleFavorite = async () => {
-        try {
-            await api.post(`/photos/${selectedPhoto.photo_id}/favorite/`);
-            setIsFavorite(true);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleUnfavorite = async () => {
-        try {
-            await api.post(`/photos/${selectedPhoto.photo_id}/unfavorite/`);
-            setIsFavorite(false);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
 
 
+  //load-more logic
+  const loadMorePhotos = async () => {
+    if (!nextPage) return;
+
+    try {
+      setLoadingMore(true);
+      const res = await api.get(nextPage);
+      setPhotos(prev => [...prev, ...res.data.results]);
+      setNextPage(res.data.next);
+    } catch {
+      alert("Failed to load more photos");
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+
+  // ADD TAG ON ENTER
+  const handleTagKeyDown = async (e) => {
+    if (e.key !== "Enter") return;
+
+    e.preventDefault();
+    if (!tagInput.trim()) return;
+
+    const tags = tagInput
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+
+    for (let name of tags) {
+      await api.post(
+        `/photos/${selectedPhoto.photo_id}/add_tag/`,
+        { tag: name }
+      );
+    }
+
+    const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
+    setSelectedPhoto(res.data);
+    setTagInput("");
+    fetchPhotos();
+  };
+
+  const removeTag = async (name) => {
+    await api.post(
+      `/photos/${selectedPhoto.photo_id}/remove_tag/`,
+      { tag: name }
+    );
+
+    const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
+    setSelectedPhoto(res.data);
+    fetchPhotos();
+  };
+
+  //load comments function
+  const fetchComments = async () => {
+    try {
+      const res = await api.get(
+        `/photos/${selectedPhoto.photo_id}/comments/`
+      );
+      setComments(res.data);
+    } catch (err) {
+      console.error("Failed to load comments", err);
+    }
+  };
+  useEffect(() => {
+    if (!selectedPhoto) return;
+
+
+
+    fetchComments();
+  }, [selectedPhoto]);
+  //submit comment
+  const handleAddComment = async () => {
+    if (!commentInput.trim()) return;
+
+    try {
+
+
+      await api.post(
+        `/photos/${selectedPhoto.photo_id}/comments/`,
+        { content: commentInput }
+      );
+
+      setCommentInput("");
+
+      fetchComments();
+
+    } catch (err) {
+      console.error("Failed to post comment", err);
+      alert("Failed to add comment");
+    }
+  };
+  //fetch isfavorite
+  useEffect(() => {
+    if (!selectedPhoto) return;
+
+    // TEMP logic: infer favorite state from backend later
+    setIsFavorite(selectedPhoto.is_favorite);
+  }, [selectedPhoto]);
+  //handle favorite and un favorite
+  const handleFavorite = async () => {
+    try {
+      await api.post(`/photos/${selectedPhoto.photo_id}/favorite/`);
+      setIsFavorite(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUnfavorite = async () => {
+    try {
+      await api.post(`/photos/${selectedPhoto.photo_id}/unfavorite/`);
+      setIsFavorite(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  //fetch users
+  const fetchUsers = async () => {
+    const res = await api.get("/accounts/users/");
+    // console.log(res.data);
+    setUsers(res.data);
+  };
+  useEffect(() => {
+
+    fetchUsers();
+
+  }, []);
+
+
+
+  //handle add user tag
+  const addUserTag = async () => {
+    if (!selectedUser) return;
+
+    await api.post(
+      `/photos/${selectedPhoto.photo_id}/add_user_tag/`,
+      { user_id: selectedUser }
+    );
+
+    const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
+    setSelectedPhoto(res.data);
+    setSelectedUser("");
+  };
+  //handle remove tag
+  const removeUserTag = async (userId) => {
+    await api.post(
+      `/photos/${selectedPhoto.photo_id}/remove_user_tag/`,
+      { user_id: userId }
+    );
+
+    const res = await api.get(`/photos/${selectedPhoto.photo_id}/`);
+    setSelectedPhoto(res.data);
+  };
 
 
 
 
 
 
-    if (loading) return <p className="loading">Loading...</p>;
-
-    return (
-        <div className="gallery-container">
-
-            {/* GRID */}
-            <div className="gallery-grid">
-                {photos.map(photo => (
-                    <div
-                        key={photo.photo_id}
-                        className="gallery-card"
-                        onClick={async () => {
-                            const res = await api.get(`/photos/${photo.photo_id}/`);
-                            setSelectedPhoto(res.data);
-                        }}
-
-                    >
-                        <img
-                            src={`http://127.0.0.1:8000${photo.thumbnail_img}`}
-                            className="gallery-img"
-                        />
-                    </div>
-                ))}
-            </div>
-            {nextPage && (
-                <div className="load-more-container">
-                    <button
-                        className="load-more-btn"
-                        onClick={loadMorePhotos}
-                        disabled={loadingMore}
-                    >
-                        {loadingMore ? "Loading..." : "Load more"}
-                    </button>
-                </div>
-            )}
 
 
-            {/* MODAL */}
+
+
+
+  if (loading) return <p className="loading">Loading...</p>;
+
+  return (
+    <div className="gallery-container">
+
+      {/* GRID */}
+      <div className="gallery-grid">
+        {photos.map(photo => (
+          <div
+            key={photo.photo_id}
+            className="gallery-card"
+            onClick={async () => {
+              const res = await api.get(`/photos/${photo.photo_id}/`);
+              setSelectedPhoto(res.data);
+            }}
+
+          >
+            <img
+              src={`http://127.0.0.1:8000${photo.thumbnail_img}`}
+              className="gallery-img"
+              alt=""
+            />
+          </div>
+        ))}
+      </div>
+      {nextPage && (
+        <div className="load-more-container">
+          <button
+            className="load-more-btn"
+            onClick={loadMorePhotos}
+            disabled={loadingMore}
+          >
+            {loadingMore ? "Loading..." : "Load more"}
+          </button>
+        </div>
+      )}
+
+
+      {/* MODAL */}
       {selectedPhoto && (
         <div
           className="modal-overlay"
@@ -231,6 +277,31 @@ export default function Gallery() {
                   </span>
                 ))}
               </div>
+
+              {/* {TAGGED USERS} */}
+              {/* TAGGED USERS */}
+              {selectedPhoto.users_tagged.map((u) => (
+                <span key={u.id} className="tag">
+                  {u.email}
+                  <button onClick={() => removeUserTag(u.id)}>×</button>
+                </span>
+              ))}
+
+              <select
+                value={selectedUser}
+                onChange={(e) => setSelectedUser(e.target.value)}
+              >
+                <option value="">Tag a user</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.email}
+                  </option>
+                ))}
+              </select>
+
+              <button onClick={addUserTag}>Add</button>
+
+
 
               {/* COMMENTS */}
               <div className="comments-section">
@@ -292,6 +363,6 @@ export default function Gallery() {
           </div>
         </div>
       )}
-        </div>
-      );
+    </div>
+  );
 }

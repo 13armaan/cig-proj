@@ -5,6 +5,7 @@ import Favorites from "./pages/Favorites";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Upload from "./pages/Upload";
 import OmniportSuccess from "./pages/OmniportSuccess";
+import Tagged from "./pages/Tagged";
 
 
 
@@ -36,6 +37,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Favorites />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tagged"
+          element={
+            <ProtectedRoute>
+              <Tagged />
             </ProtectedRoute>
           }
         />

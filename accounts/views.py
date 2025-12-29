@@ -2,6 +2,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegisterSerializer, VerifyOTPSerializer, LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsVerified,IsNotGuest
+from django.contrib.auth import get_user_model
+
+#get user list
+User=get_user_model()
+class UserListView(APIView):
+    permission_classes=[IsAuthenticated,IsVerified,IsNotGuest]
+    def get(self,request):
+        users=User.objects.all().values("id","email")
+        return Response(users)
+
 
 
 class RegisterAPIView(APIView):
