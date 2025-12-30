@@ -77,7 +77,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
 
         created_photos = []
 
-        from photos.tasks import generate_thumbnail
+        from photos.tasks import generate_thumbnail,auto_tag_photo
         from celery import chain
 
         for file in files:
@@ -88,10 +88,10 @@ class PhotoViewSet(viewsets.ModelViewSet):
             )
 
             # async processing per photo
-            # chain(
-            generate_thumbnail.delay(photo.photo_id),
-            #     # generate_watermark.s()
-            # ).delay()
+            chain(
+             generate_thumbnail.s(photo.photo_id),
+             auto_tag_photo.s()
+             ).delay()
 
             created_photos.append(photo.photo_id)
 

@@ -58,7 +58,7 @@ def generate_thumbnail(photo_id):
 
     photo.is_processed = True
     photo.save()
-    # return photo_id # for watermark to take input
+    return photo_id 
 
 #watermark_img generation
 
@@ -109,3 +109,44 @@ def generate_thumbnail(photo_id):
 #     )
 
 #     photo.save()
+from celery import shared_task
+from django.db import transaction
+from .models import Photo, Tag
+
+
+@shared_task(queue="ml", bind=True, autoretry_for=(Exception,), retry_kwargs={"max_retries": 3, "countdown": 10})
+def auto_tag_photo(self, photo_id):
+    # 🔥 IMPORTS INSIDE TASK (CRITICAL)
+    import numpy as np
+    from tensorflow.keras.applications.mobilenet_v2 import (
+        MobileNetV2,
+        preprocess_input,
+        decode_predictions
+    )
+    from tensorflow.keras.preprocessing import image
+
+    # Load model lazily (cached per worker process)
+    if not hasattr(auto_tag_photo, "model"):
+        auto_tag_photo.model = MobileNetV2(weights="imagenet")
+
+    model = auto_tag_photo.model
+
+    try:
+        photo = Photo.objects.get(photo_id=photo_id)
+    except Photo.DoesNotExist:
+        return "Photo not found"
+
+    img = image.load_img(photo.original_img.path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = preprocess_input(img_array)
+
+    preds = model.predict(img_array)
+    decoded = decode_predictions(preds, top=5)[0]
+
+    with transaction.atomic():
+        for _, label, confidence in decoded:
+            tag, _ = Tag.objects.get_or_create(name=label)
+            photo.tags.add(tag)
+
+    return [label for _, label, _ in decoded]
