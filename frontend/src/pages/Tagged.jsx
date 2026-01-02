@@ -20,15 +20,38 @@ export default function Gallery() {
 
 
 
-  //search tags..
+  //search tags and albums..
   const [taggedUser, setTaggedUser] = useState("");
   const [searchTag, setSearchTag] = useState("");
+  const [albums, setAlbums] = useState([]);
+  const [album, setAlbum] = useState("");
+
+  // fetch albums
+  useEffect(() => {
+    const fetchAlbums = async () => {
+      try {
+        const res = await api.get("/albums/");
+        console.log("ALBUM RESPONSE:", res.data);
+
+        setAlbums(res.data);
+      } catch {
+        alert("Failed to load albums");
+      }
+    };
+
+    fetchAlbums();
+  }, []);
 
 
   const fetchPhotos = async () => {
+    setLoading(true);
+    setPhotos([]);
+    setNextPage(null);
+
     let url = "/photos/tagged/?";
     if (searchTag) url += `tag=${searchTag}&`;
     if (taggedUser) url += `tagged_user=${taggedUser}&`;
+    if (album) url += `album=${album}&`;
 
     try {
       const res = await api.get(url);
@@ -45,7 +68,8 @@ export default function Gallery() {
 
   useEffect(() => {
     fetchPhotos();
-  }, []);
+  }, [album]);
+
 
 
   //load-more logic
@@ -217,6 +241,17 @@ export default function Gallery() {
 
   return (
     <div className="gallery-container">
+      <div className="gallery-search">
+        <select value={album} onChange={(e) => setAlbum(e.target.value)
+        }>
+          <option value="">Select album</option>
+          {albums.map((a) => (
+            <option key={a.album_id} value={a.album_id}>
+              {a.title}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="gallery-search">
         <input
           className="search-input"
