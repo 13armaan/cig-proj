@@ -20,7 +20,7 @@ export default function Gallery() {
 
 
 
-  //search tags and albums..
+   //search tags and albums..
   const [taggedUser, setTaggedUser] = useState("");
   const [searchTag, setSearchTag] = useState("");
   const [albums, setAlbums] = useState([]);

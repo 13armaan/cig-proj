@@ -38,24 +38,38 @@ export default function Gallery() {
 
     fetchAlbums();
   }, []);
-
+  //views..for gallery (photos,albums,favorites,tagged)
+  const [view, setView] = useState("photos");
+  const getEndpoint = () => {
+    if (view === "favorites") return "/photos/favorites/";
+    if (view === "tagged") return "/photos/tagged/";
+    // if (view === "albums") return "/albums/";
+    return "/photos/";
+  };
 
   const fetchPhotos = async () => {
     setLoading(true);
     setPhotos([]);
     setNextPage(null);
 
-    let url = "/photos/?";
-    if (searchTag) url += `tag=${searchTag}&`;
-    if (taggedUser) url += `tagged_user=${taggedUser}&`;
-    if (album) url += `album=${album}&`;
+    let url = getEndpoint();
+    if (view != "albums") {
+      const params = [];
+      if (searchTag) params.push(`tag=${searchTag}`);
+      if (taggedUser) params.push(`tagged_user=${taggedUser}`);
+      if (album) params.push(`album=${album}`);
+
+      if (params.length) url += `?${params.join("&")}`;
+    }
+
 
     try {
       const res = await api.get(url);
       // console.log(res.data.next)
       setNextPage(res.data.next);
-      console.log(nextPage);
+      // console.log(nextPage);
       setPhotos(res.data.results);
+      console.log(res.data.results);
     } catch {
       alert("Failed to load photos");
     } finally {
@@ -64,8 +78,10 @@ export default function Gallery() {
   };
 
   useEffect(() => {
-    fetchPhotos();
-  }, [album]);
+    if (view !== "albums") {
+      fetchPhotos();
+    }
+  }, [view, album]);
 
 
   //load-more logic
@@ -237,72 +253,110 @@ export default function Gallery() {
 
   return (
     <div className="gallery-container">
-      <div className="gallery-search">
-        <select value={album} onChange={(e) => setAlbum(e.target.value)
-        }>
-          <option value="">Select album</option>
-          {albums.map((a) => (
-            <option key={a.album_id} value={a.album_id}>
-              {a.title}
-            </option>
-          ))}
-        </select>
+
+      {/* SIDEBAR */}
+      <div className="sidebar">
+        <button onClick={() => {
+          setView("photos");
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }}>Photos</button>
+        <button onClick={() => {
+          setView("albums")
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }}>Albums</button>
+        <button onClick={() => {
+          setView("favorites")
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }
+        }>Favorites</button>
+        <button onClick={() => {
+          setView("tagged")
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }
+        }>Tagged-in</button>
       </div>
-      <div className="gallery-search">
-        <input
-          className="search-input"
-          placeholder="Search by tag"
-          value={searchTag}
-          onChange={(e) => setSearchTag(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
-        />
-      </div>
-      <div className="gallery-search">
-        <input
-          type="text"
-          placeholder="Search by tagged user email"
-          value={taggedUser}
-          onChange={(e) => setTaggedUser(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
-        />
-      </div>
+
+      {view === "albums" && albums.map(album => (
+        <div
+          key={album.album_id}
+          className="album-card"
+          onClick={() => {
+            setAlbum(album.album_id);
+            setView("photos");
+          }}
+        >
+          {album.title}
+        </div>
+      ))}
+
 
       {/* GRID */}
-      <div className="gallery-grid">
-
-
-
-
-        {photos.map(photo => (
-
-          <div
-            key={photo.photo_id}
-            className="gallery-card"
-            onClick={async () => {
-              const res = await api.get(`/photos/${photo.photo_id}/`);
-              setSelectedPhoto(res.data);
-            }}
-
-          >
-            <img
-              src={photo.thumbnail_img}
-              className="gallery-img"
-              alt=""
+      {view !== "albums" && (
+        <div><div className="gallery-search">
+          <select value={album} onChange={(e) => setAlbum(e.target.value)
+          }>
+            <option value="">Select album</option>
+            {albums.map((a) => (
+              <option key={a.album_id} value={a.album_id}>
+                {a.title}
+              </option>
+            ))}
+          </select>
+        </div>
+          <div className="gallery-search">
+            <input
+              className="search-input"
+              placeholder="Search by tag"
+              value={searchTag}
+              onChange={(e) => setSearchTag(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
           </div>
-        ))}
-      </div>
-      {nextPage && (
-        <div className="load-more-container">
-          <button
-            className="load-more-btn"
-            onClick={loadMorePhotos}
-            disabled={loadingMore}
-          >
-            {loadingMore ? "Loading..." : "Load more"}
-          </button>
+          <div className="gallery-search">
+            <input
+              type="text"
+              placeholder="Search by tagged user email"
+              value={taggedUser}
+              onChange={(e) => setTaggedUser(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
+            />
+          </div>
+          <div className="gallery-grid">
+            {photos.map(photo => (
+              <div
+                key={photo.photo_id}
+                className="gallery-card"
+                onClick={async () => {
+                  const res = await api.get(`/photos/${photo.photo_id}/`);
+                  setSelectedPhoto(res.data);
+                }}
+              >
+                <img src={photo.thumbnail_img} className="gallery-img" alt="" />
+              </div>
+            ))}
+          </div>
+          {nextPage && (
+            <div className="load-more-container">
+              <button
+                className="load-more-btn"
+                onClick={loadMorePhotos}
+                disabled={loadingMore}
+              >
+                {loadingMore ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          )}
         </div>
       )}
+
 
 
       {/* MODAL */}

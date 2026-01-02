@@ -43,21 +43,36 @@ export default function Gallery() {
   }, []);
 
 
+  //views..for gallery (photos,albums,favorites,tagged)
+  const [view, setView] = useState("photos");
+  const getEndpoint = () => {
+    if (view === "favorites") return "/photos/favorites/";
+    if (view === "tagged") return "/photos/tagged/";
+    if (view === "albums") return "/albums/";
+    return "/photos/";
+  };
+
   const fetchPhotos = async () => {
     setLoading(true);
     setPhotos([]);
     setNextPage(null);
 
-    let url = "/photos/tagged/?";
-    if (searchTag) url += `tag=${searchTag}&`;
-    if (taggedUser) url += `tagged_user=${taggedUser}&`;
-    if (album) url += `album=${album}&`;
+    let url = getEndpoint();
+    if (view != "albums") {
+      const params = [];
+      if (searchTag) params.push(`tag=${searchTag}`);
+      if (taggedUser) params.push(`tagged_user=${taggedUser}`);
+      if (album) params.push(`album=${album}`);
+
+      if (params.length) url += `?${params.join("&")}`;
+    }
+
 
     try {
       const res = await api.get(url);
       // console.log(res.data.next)
       setNextPage(res.data.next);
-      console.log(nextPage);
+      // console.log(nextPage);
       setPhotos(res.data.results);
     } catch {
       alert("Failed to load photos");
@@ -68,8 +83,7 @@ export default function Gallery() {
 
   useEffect(() => {
     fetchPhotos();
-  }, [album]);
-
+  }, [view, album]);
 
 
   //load-more logic
@@ -241,6 +255,24 @@ export default function Gallery() {
 
   return (
     <div className="gallery-container">
+      <div className="sidebar">
+        <button onClick={() => setView("photos")}>Photos</button>
+        <button onClick={() => setView("albums")}>Albums</button>
+        <button onClick={() => setView("favorites")}>Favorites</button>
+        <button onClick={() => setView("tagged")}>Tagged-in</button>
+      </div>
+      {view === "albums" && albums.map((a) => (
+        <div
+          key={a.album_id}
+          className="album-card"
+          onClick={() => {
+            setAlbum(a.album_id);
+            setView("photos");
+          }}
+        >
+          {a.title}
+        </div>
+      ))}
       <div className="gallery-search">
         <select value={album} onChange={(e) => setAlbum(e.target.value)
         }>
@@ -284,7 +316,7 @@ export default function Gallery() {
 
           >
             <img
-              src={`http://127.0.0.1:8000${photo.thumbnail_img}`}
+              src={photo.thumbnail_img}
               className="gallery-img"
               alt=""
             />
