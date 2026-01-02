@@ -21,11 +21,35 @@ class PhotoPagination(PageNumberPagination):
     page_size_query_param="page_size"
     max_page_size=50
 
-
-
 class PhotoViewSet(viewsets.ModelViewSet):
-    pagination_class = PhotoPagination
     queryset = Photo.objects.all().order_by("-photo_id")
+    pagination_class = PhotoPagination
+    #filtering queryset function..
+    def filters(self,queryset):
+        tag = self.request.query_params.get("tag")
+        album = self.request.query_params.get("album")
+        uploader = self.request.query_params.get("uploaded_by")
+        tagged_user = self.request.query_params.get("tagged_user")
+
+        if tag:
+            queryset = queryset.filter(tags__name__iexact=tag)
+
+        if album:
+            queryset = queryset.filter(album__album_id=album)
+
+        if uploader:
+            queryset = queryset.filter(uploaded_by__email__iexact=uploader)
+        
+        if tagged_user:
+            queryset = queryset.filter(users_tagged__email__iexact=tagged_user)
+
+        return queryset.distinct()
+
+    def get_queryset(self):
+        qs = Photo.objects.all().order_by("-photo_id")
+        return self.filters(qs)
+    
+    
     permission_classes = [IsAuthenticated, IsVerified]
 
     def get_serializer_class(self):
@@ -180,6 +204,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
     def favorites(self, request):
         #using the related anmes in favorited by filed of photo model
         photos = request.user.favorite_photos.all().order_by("-photo_id")
+        photos = self.filters(photos)
         page = self.paginate_queryset(photos)
         if page is not None:
             serializer = PhotoListSerializer(page, many=True)
@@ -221,6 +246,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
     )
     def tagged(self, request):
         photos = request.user.tagged_photos.all().order_by("-photo_id")
+        photos=self.filters(photos)
 
         page = self.paginate_queryset(photos)
         if page is not None:

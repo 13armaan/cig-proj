@@ -117,13 +117,13 @@ from .models import Photo, Tag
 @shared_task(queue="ml")
 def auto_tag_photo(photo_id):
     # imported inside ML worker for compatibility with the venv_ml
-    import numpy as np
-    from tensorflow.keras.applications.mobilenet_v2 import (
+    import numpy as np # type: ignore
+    from tensorflow.keras.applications.mobilenet_v2 import ( # type: ignore
         MobileNetV2,
         preprocess_input,
         decode_predictions
     )
-    from tensorflow.keras.preprocessing import image
+    from tensorflow.keras.preprocessing import image # type: ignore
 
     # Load model lazily (cached per worker process)
     if not hasattr(auto_tag_photo, "model"):

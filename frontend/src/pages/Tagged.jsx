@@ -20,9 +20,18 @@ export default function Gallery() {
 
 
 
+  //search tags..
+  const [taggedUser, setTaggedUser] = useState("");
+  const [searchTag, setSearchTag] = useState("");
+
+
   const fetchPhotos = async () => {
+    let url = "/photos/tagged/?";
+    if (searchTag) url += `tag=${searchTag}&`;
+    if (taggedUser) url += `tagged_user=${taggedUser}&`;
+
     try {
-      const res = await api.get("/photos/tagged");
+      const res = await api.get(url);
       // console.log(res.data.next)
       setNextPage(res.data.next);
       console.log(nextPage);
@@ -208,6 +217,24 @@ export default function Gallery() {
 
   return (
     <div className="gallery-container">
+      <div className="gallery-search">
+        <input
+          className="search-input"
+          placeholder="Search by tag"
+          value={searchTag}
+          onChange={(e) => setSearchTag(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
+        />
+      </div>
+      <div className="gallery-search">
+        <input
+          type="text"
+          placeholder="Search by tagged user email"
+          value={taggedUser}
+          onChange={(e) => setTaggedUser(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
+        />
+      </div>
 
       {/* GRID */}
       <div className="gallery-grid">

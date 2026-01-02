@@ -187,3 +187,34 @@
 .comments-list::-webkit-scrollbar-track {
   background: transparent;
 }
+.gallery-search {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.gallery-search input {
+  width: 360px;
+  max-width: 90%;
+  padding: 10px 14px;
+  font-size: 14px;
+
+  background-color: #121212;
+  color: #ffffff;
+
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-search input::placeholder {
+  color: #888;
+}
+
+.gallery-search input:focus {
+  border-color: #4f46e5; /* subtle accent */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+}
