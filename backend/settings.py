@@ -131,7 +131,21 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'accounts.User'# to use created user model
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'#later replace to Gmail SMTP
+
+#later replace to Gmail SMTP
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+import os
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = "Smart Event <smartevent.platform@gmail.com>"
+
+
 #for JWT implementation
 from datetime import timedelta
 
@@ -169,7 +183,7 @@ OMNIPORT_USERINFO_URL = "https://channeli.in/open_auth/get_user_data/"
 
 
 #Celery setup
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = "redis://localhost:6380/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 

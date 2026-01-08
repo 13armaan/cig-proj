@@ -61,6 +61,9 @@ class VerifyOTPSerializer(serializers.Serializer):
 
         otp_obj.is_used = True
         otp_obj.save()
+        from accounts.models import Role
+        #just for getting basic permissions out...as guest work idk
+        user.roles.set(Role.objects.filter(name="IMG Member"))
 
         return user
 
