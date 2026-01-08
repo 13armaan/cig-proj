@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./Gallery.css";
+import { Drawer, Stack, Button, Box } from "@mui/material";
 
 export default function Gallery() {
   const [photos, setPhotos] = useState([]);
@@ -252,38 +253,63 @@ export default function Gallery() {
   if (loading) return <p className="loading">Loading...</p>;
 
   return (
-    <div className="gallery-container">
+  <div className="gallery-container">
 
-      {/* SIDEBAR */}
-      <div className="sidebar">
-        <button onClick={() => {
+    {/* SIDEBAR */}
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: 200,
+        [`& .MuiDrawer-paper`]: {
+          width: 200,
+          background: "#0f0f0f",
+          color: "#fff",
+          borderRight: "1px solid #222",
+        },
+      }}
+    >
+      <Stack spacing={2} sx={{ p: 2 }}>
+        <Button onClick={() => {
           setView("photos");
           setAlbum("");
           setSearchTag("");
           setTaggedUser("");
-        }}>Photos</button>
-        <button onClick={() => {
-          setView("albums")
-          setAlbum("");
-          setSearchTag("");
-          setTaggedUser("");
-        }}>Albums</button>
-        <button onClick={() => {
-          setView("favorites")
-          setAlbum("");
-          setSearchTag("");
-          setTaggedUser("");
-        }
-        }>Favorites</button>
-        <button onClick={() => {
-          setView("tagged")
-          setAlbum("");
-          setSearchTag("");
-          setTaggedUser("");
-        }
-        }>Tagged-in</button>
-      </div>
+        }}>Photos</Button>
 
+        <Button onClick={() => {
+          setView("albums");
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }}>Albums</Button>
+
+        <Button onClick={() => {
+          setView("favorites");
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }}>Favorites</Button>
+
+        <Button onClick={() => {
+          setView("tagged");
+          setAlbum("");
+          setSearchTag("");
+          setTaggedUser("");
+        }}>Tagged-in</Button>
+      </Stack>
+    </Drawer>
+
+    {/* ================= MAIN CONTENT ================= */}
+    <Box
+      sx={{
+        marginLeft: "200px",        // 🔑 OFFSET FOR DRAWER
+        padding: "24px",
+        minHeight: "100vh",
+        overflowY: "auto",
+      }}
+    >
+
+      {/* ALBUM VIEW */}
       {view === "albums" && albums.map(album => (
         <div
           key={album.album_id}
@@ -297,20 +323,20 @@ export default function Gallery() {
         </div>
       ))}
 
-
-      {/* GRID */}
+      {/* PHOTO VIEW */}
       {view !== "albums" && (
-        <div><div className="gallery-search">
-          <select value={album} onChange={(e) => setAlbum(e.target.value)
-          }>
-            <option value="">Select album</option>
-            {albums.map((a) => (
-              <option key={a.album_id} value={a.album_id}>
-                {a.title}
-              </option>
-            ))}
-          </select>
-        </div>
+        <>
+          <div className="gallery-search">
+            <select value={album} onChange={(e) => setAlbum(e.target.value)}>
+              <option value="">Select album</option>
+              {albums.map((a) => (
+                <option key={a.album_id} value={a.album_id}>
+                  {a.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="gallery-search">
             <input
               className="search-input"
@@ -320,15 +346,16 @@ export default function Gallery() {
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
           </div>
+
           <div className="gallery-search">
             <input
-              type="text"
               placeholder="Search by tagged user email"
               value={taggedUser}
               onChange={(e) => setTaggedUser(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchPhotos()}
             />
           </div>
+
           <div className="gallery-grid">
             {photos.map(photo => (
               <div
@@ -339,10 +366,15 @@ export default function Gallery() {
                   setSelectedPhoto(res.data);
                 }}
               >
-                <img src={photo.thumbnail_img} className="gallery-img" alt="" />
+                <img
+                  src={photo.thumbnail_img}
+                  className="gallery-img"
+                  alt=""
+                />
               </div>
             ))}
           </div>
+
           {nextPage && (
             <div className="load-more-container">
               <button
@@ -354,8 +386,9 @@ export default function Gallery() {
               </button>
             </div>
           )}
-        </div>
+        </>
       )}
+    </Box>
 
 
 

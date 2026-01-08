@@ -6,6 +6,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Upload from "./pages/Upload";
 import OmniportSuccess from "./pages/OmniportSuccess";
 import Tagged from "./pages/Tagged";
+import SignUp from "./pages/SignUp";
+import VerifyOtp from "./pages/VerifyOtp";
 
 
 
@@ -14,6 +16,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+
+
 
         <Route
           path="/gallery"

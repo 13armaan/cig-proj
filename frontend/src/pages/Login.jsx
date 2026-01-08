@@ -41,6 +41,9 @@ function Login() {
   const handleOmniportLogin = () => {
     window.location.href = "http://127.0.0.1:8000/api/accounts/auth/omniport/login/";
   };
+  const handleSignup =()=>{
+    navigate("/signup")
+  }
 
 
 
@@ -65,6 +68,7 @@ function Login() {
           />
 
           <button type="submit">Login</button>
+          
           <div className="divider">OR</div>
 
           <button
@@ -75,6 +79,15 @@ function Login() {
             Login with Omniport
           </button>
         </form>
+        <div className="divider">OR</div>
+
+          <button
+            className="omniport-btn"
+            onClick={handleSignup}
+          >
+          
+            Sign-Up
+          </button>
       </div>
     </div>
   );
