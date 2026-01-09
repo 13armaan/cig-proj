@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "./SignUp.css";
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -46,30 +47,55 @@ export default function Signup() {
 
     return (
         <div className="auth-container">
-            <h2>Sign Up</h2>
+            <div className="auth-box">
+                <h2>Create Account</h2>
+                <p className="auth-subtitle">Join Smart Event Photos</p>
 
-            <input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUserName(e.target.value)}
-            />
+                <div className="form-group">
+                    <label htmlFor="username">Username</label>
+                    <input
+                        id="username"
+                        type="text"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={(e) => setUserName(e.target.value)}
+                    />
+                </div>
 
-            <input
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
 
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
 
-            <button onClick={handleSignup} disabled={loading}>
-                {loading ? "Creating account..." : "Sign Up"}
-            </button>
+                <button 
+                    className="auth-button"
+                    onClick={handleSignup} 
+                    disabled={loading}
+                >
+                    {loading ? "Creating account..." : "Sign Up"}
+                </button>
+
+                <p className="auth-link">
+                    Already have an account? <a href="/login">Login</a>
+                </p>
+            </div>
         </div>
     );
 }

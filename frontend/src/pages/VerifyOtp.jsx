@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "./VerifyOtp.css";
 
 export default function VerifyOtp() {
     const { login } = useAuth();
@@ -65,18 +66,37 @@ export default function VerifyOtp() {
 
     return (
         <div className="auth-container">
-            <h2>Verify OTP</h2>
-            <p>OTP sent to: <b>{email}</b></p>
+            <div className="auth-box">
+                <h2>Verify Email</h2>
+                <p className="auth-subtitle">Enter the OTP sent to your email</p>
 
-            <input
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-            />
+                <div className="email-display">
+                    <p>Verification code sent to:</p>
+                    <p className="email-text"><b>{email}</b></p>
+                </div>
 
-            <button onClick={handleVerify} disabled={loading}>
-                {loading ? "Verifying..." : "Verify"}
-            </button>
+                <div className="form-group">
+                    <label htmlFor="otp">One-Time Password</label>
+                    <input
+                        id="otp"
+                        type="text"
+                        placeholder="Enter 6-digit OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        maxLength="6"
+                    />
+                </div>
+
+                <button 
+                    className="auth-button"
+                    onClick={handleVerify} 
+                    disabled={loading}
+                >
+                    {loading ? "Verifying..." : "Verify OTP"}
+                </button>
+
+                
+            </div>
         </div>
     );
 }
