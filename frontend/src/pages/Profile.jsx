@@ -1,0 +1,145 @@
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
+import "./Profile.css";
+
+export default function Profile() {
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const res = await api.get("/accounts/role/");
+            setUser(res.data);
+            setLoading(false);
+        } catch (err) {
+            console.error("Failed to fetch user profile:", err);
+            setLoading(false);
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        navigate("/login");
+    };
+
+    if (loading) return <p>Loading...</p>;
+
+    if (!user) {
+        return (
+            <div className="profile-container">
+                {/* NAVBAR */}
+                <nav className="navbar">
+                    <div className="navbar-content">
+                        <h1 className="navbar-logo">Smart Event Photos</h1>
+                        <div className="navbar-links">
+                            <button 
+                                className="navbar-btn"
+                                onClick={() => navigate("/gallery")}
+                            >
+                                Gallery
+                            </button>
+                            <button 
+                                className="navbar-btn"
+                                onClick={() => navigate("/upload")}
+                            >
+                                Photographer Dashboard
+                            </button>
+                            <button 
+                                className="navbar-btn active"
+                                onClick={() => navigate("/profile")}
+                            >
+                                Profile
+                            </button>
+                            <button 
+                                className="navbar-btn logout-btn"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+                <p>Unable to load profile</p>
+                <button onClick={() => navigate("/gallery")}>Go Back</button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="profile-container">
+            {/* NAVBAR */}
+            <nav className="navbar">
+                <div className="navbar-content">
+                    <h1 className="navbar-logo">Smart Event Photos</h1>
+                    <div className="navbar-links">
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/gallery")}
+                        >
+                            Gallery
+                        </button>
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/upload")}
+                        >
+                            Photographer Dashboard
+                        </button>
+                        <button 
+                            className="navbar-btn active"
+                            onClick={() => navigate("/profile")}
+                        >
+                            Profile
+                        </button>
+                        <button 
+                            className="navbar-btn logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            <div className="profile-card">
+                <h2>User Profile</h2>
+                
+                <div className="profile-info">
+                    <div className="profile-field">
+                        <label>Username</label>
+                        <p>{user.username || "N/A"}</p>
+                    </div>
+
+                    <div className="profile-field">
+                        <label>Email</label>
+                        <p>{user.email || "N/A"}</p>
+                    </div>
+
+                    <div className="profile-field">
+                        <label>Roles</label>
+                        <div className="roles-list">
+                            {user.roles && user.roles.length > 0 ? (
+                                user.roles.map((role, index) => (
+                                    <span key={index} className="role-badge">
+                                        {role}
+                                    </span>
+                                ))
+                            ) : (
+                                <p>No roles assigned</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="profile-actions">
+                    <button onClick={() => navigate("/gallery")}>Back to Gallery</button>
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -70,6 +70,12 @@ export default function Albums() {
         setUsers(res.data);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        navigate("/login");
+    };
+
     useEffect(() => {
         fetchAlbums();
         fetchUsers();
@@ -168,6 +174,38 @@ export default function Albums() {
 
     return (
         <div className="albums-container">
+            {/* NAVBAR */}
+            <nav className="navbar">
+                <div className="navbar-content">
+                    <h1 className="navbar-logo">Smart Event Photos</h1>
+                    <div className="navbar-links">
+                        <button 
+                            className="navbar-btn active"
+                            onClick={() => navigate("/albums")}
+                        >
+                            Gallery
+                        </button>
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/upload")}
+                        >
+                            Photographer Dashboard
+                        </button>
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/profile")}
+                        >
+                            Profile
+                        </button>
+                        <button 
+                            className="navbar-btn logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
             <h2>Albums</h2>
             {IsAdmin && !EditingAlbum && (
                 <div className="create-album-card">

@@ -163,6 +163,13 @@ export default function Gallery() {
       console.error("Failed to load comments", err);
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    navigate("/login");
+  };
+
   useEffect(() => {
     if (!selectedPhoto) return;
 
@@ -268,6 +275,38 @@ export default function Gallery() {
 
   return (
     <div className="gallery-container">
+      {/* NAVBAR */}
+      <nav className="navbar">
+        <div className="navbar-content">
+          <h1 className="navbar-logo">Smart Event Photos</h1>
+          <div className="navbar-links">
+            <button 
+              className="navbar-btn active"
+              onClick={() => navigate("/gallery")}
+            >
+              Gallery
+            </button>
+            <button 
+              className="navbar-btn"
+              onClick={() => navigate("/upload")}
+            >
+              Photographer Dashboard
+            </button>
+            <button 
+              className="navbar-btn"
+              onClick={() => navigate("/profile")}
+            >
+              Profile
+            </button>
+            <button 
+              className="navbar-btn logout-btn"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
 
       {/* SIDEBAR */}
       <Drawer
@@ -279,6 +318,7 @@ export default function Gallery() {
             background: "#0f0f0f",
             color: "#fff",
             borderRight: "1px solid #222",
+            marginTop: "70px",
           },
         }}
       >
@@ -317,6 +357,7 @@ export default function Gallery() {
       <Box
         sx={{
           marginLeft: "200px",        // 🔑 OFFSET FOR DRAWER
+          marginTop: "70px",          // OFFSET FOR NAVBAR
           padding: "24px",
           minHeight: "100vh",
           overflowY: "auto",

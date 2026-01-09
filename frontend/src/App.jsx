@@ -8,6 +8,7 @@ import OmniportSuccess from "./pages/OmniportSuccess";
 import SignUp from "./pages/SignUp";
 import VerifyOtp from "./pages/VerifyOtp";
 import Albums from "./pages/Albums";
+import Profile from "./pages/Profile";
 
 
 
@@ -34,6 +35,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Albums />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

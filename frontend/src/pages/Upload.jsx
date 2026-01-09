@@ -23,6 +23,13 @@ function Upload() {
         // console.log(res.data);
         setUsers(res.data);
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        navigate("/login");
+    };
+
     useEffect(() => {
 
         fetchUsers();
@@ -150,6 +157,38 @@ function Upload() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
+            {/* NAVBAR */}
+            <nav className="navbar">
+                <div className="navbar-content">
+                    <h1 className="navbar-logo">Smart Event Photos</h1>
+                    <div className="navbar-links">
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/gallery")}
+                        >
+                            Gallery
+                        </button>
+                        <button 
+                            className="navbar-btn active"
+                            onClick={() => navigate("/upload")}
+                        >
+                            Photographer Dashboard
+                        </button>
+                        <button 
+                            className="navbar-btn"
+                            onClick={() => navigate("/profile")}
+                        >
+                            Profile
+                        </button>
+                        <button 
+                            className="navbar-btn logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
             <form onSubmit={handleSubmit} className="upload-form">
                 <h2>Upload Photo</h2>
 

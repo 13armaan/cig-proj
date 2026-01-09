@@ -16,6 +16,8 @@ class GetRoleSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "roles",
+            "email",
+            "username",
         ]
 
 class RegisterSerializer(serializers.ModelSerializer):
