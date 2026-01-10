@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./Gallery.css";
 import { Drawer, Stack, Button, Box } from "@mui/material";
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Gallery() {
   const [photos, setPhotos] = useState([]);
@@ -26,10 +26,29 @@ export default function Gallery() {
   const [album, setAlbum] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const [IsAdmin, setIsAdmin] = useState(false);
+  const [IsPhotographer, setIsPhotographer] = useState(false);
+
+  const fetchRole = async () => {
+    const res = await api.get("/accounts/role/");
+    setIsAdmin(
+      res.data.roles?.includes("Admin")
+
+    );
+    setIsPhotographer(
+      res.data.roles?.includes("Photographer")
+    );
+    // console.log(IsAdmin);
+
+
+
+
+  };
 
   useEffect(() => {
     if (location.state?.album) {
       setAlbum(location.state.album);
+      
       setView("photos");
     }
   }, [location.state]);
@@ -96,6 +115,8 @@ export default function Gallery() {
     if (view !== "albums") {
       fetchPhotos();
     }
+    fetchRole();
+    
   }, [view, album]);
 
 
@@ -280,25 +301,28 @@ export default function Gallery() {
         <div className="navbar-content">
           <h1 className="navbar-logo">Smart Event Photos</h1>
           <div className="navbar-links">
-            <button 
+            <button
               className="navbar-btn active"
               onClick={() => navigate("/gallery")}
             >
               Gallery
             </button>
-            <button 
-              className="navbar-btn"
-              onClick={() => navigate("/upload")}
-            >
-              Photographer Dashboard
-            </button>
-            <button 
+            {(IsAdmin || IsPhotographer) && (
+              <button
+                className="navbar-btn"
+                onClick={() => navigate("/upload")}
+              >
+                Photographer Dashboard
+              </button>
+            )}
+
+            <button
               className="navbar-btn"
               onClick={() => navigate("/profile")}
             >
               Profile
             </button>
-            <button 
+            <button
               className="navbar-btn logout-btn"
               onClick={handleLogout}
             >
@@ -365,23 +389,72 @@ export default function Gallery() {
       >
 
         {/* ALBUM VIEW */}
-        {view === "albums" &&  (
+        {view === "albums" && (
           navigate("/albums")
-          )}
+        )}
 
         {/* PHOTO VIEW */}
         {view !== "albums" && (
           <>
+            {/* ALBUM DETAILS SECTION */}
+            <div className="album-details-section">
+              {album ? (
+                (() => {
+                  const selectedAlbum = albums.find(a => a.album_id == album);
+                  return selectedAlbum ? (
+                    <div className="album-detail-card">
+                      {selectedAlbum.cover_image && (
+                        <img
+                          src={selectedAlbum.cover_image}
+                          alt={selectedAlbum.title}
+                          className="album-detail-cover"
+                        />
+                      )}
+                      <div className="album-detail-info">
+                        <h1>{selectedAlbum.title}</h1>
+                        {selectedAlbum.description && (
+                          <p className="album-detail-description">{selectedAlbum.description}</p>
+                        )}
+
+                        <span className="album-detail-date">
+                          {new Date(selectedAlbum.start_date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </span>
+
+                        {/* <button 
+                          className="change-album-btn"
+                          onClick={() => setAlbum("")}
+                        >
+                          View All Photos
+                        </button> */}
+                      </div>
+                    </div>
+                  ) : null;
+                })()
+              ) : (
+                <div className="album-detail-card all-photos">
+                  <div className="album-detail-info">
+                    <h1>All Photos</h1>
+                    <p>Browse all photos across all albums</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ALBUM SELECTOR DROPDOWN
             <div className="gallery-search">
-              <select value={album} onChange={(e) => setAlbum(e.target.value)}>
-                <option value="">Select album</option>
+              <select value={album} onChange={(e) => setAlbum(e.target.value)} className="album-select">
+                <option value="">All Photos</option>
                 {albums.map((a) => (
                   <option key={a.album_id} value={a.album_id}>
                     {a.title}
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
             <div className="gallery-search">
               <input

@@ -132,7 +132,11 @@ def omniport_callback(request):
         },
     )
     from accounts.models import Role
-    user.roles.set(Role.objects.filter(name="IMG Member"))
+
+    if not user.roles.exists():
+        img_role = Role.objects.get(name="IMG Member")
+        user.roles.add(img_role)
+
     
 
     # 4. Generate JWT

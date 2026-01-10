@@ -16,7 +16,7 @@ class Photo(models.Model):
     photo_id = models.AutoField(primary_key=True)
 
     album = models.ForeignKey(Album, on_delete=models.CASCADE,null=True)
-    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="uploaded_photos")
     is_processed = models.BooleanField(default=False)
     original_img = models.ImageField(upload_to="originals/")
     thumbnail_img = models.ImageField(upload_to="thumbnails/", null=True, blank=True)
@@ -39,6 +39,7 @@ class Photo(models.Model):
     )
 
     capture_at = models.DateTimeField(null=True, blank=True)
+    download_count = models.IntegerField(default=0)
     # metadata = models.JSONField(default=dict, blank=True)  will do json later
     metadata = models.CharField(null=True, blank=True)
 

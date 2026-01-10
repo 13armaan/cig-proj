@@ -221,6 +221,14 @@ class PhotoViewSet(viewsets.ModelViewSet):
 
         # permission already passed → serve original
         if photo.original_img:
+            # increment download count
+            try:
+                photo.download_count = (photo.download_count or 0) + 1
+                photo.save(update_fields=["download_count"])
+            except Exception:
+                # non-fatal if increment fails
+                pass
+
             return FileResponse(
                 photo.original_img.open("rb"),
                 as_attachment=True,
@@ -248,6 +256,47 @@ class PhotoViewSet(viewsets.ModelViewSet):
 
         serializer = PhotoListSerializer(photos, many=True)
         return Response(serializer.data)
+
+    # photographer: list my uploads
+    @action(
+        detail=False, methods=["get"], permission_classes=[IsAuthenticated, IsVerified]
+    )
+    def my_uploads(self, request):
+        photos = Photo.objects.filter(uploaded_by=request.user).order_by("-photo_id")
+        photos = self.filters(photos)
+
+        page = self.paginate_queryset(photos)
+        if page is not None:
+            serializer = PhotoListSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(serializer.data)
+
+        serializer = PhotoListSerializer(photos, many=True, context={"request": request})
+        return Response(serializer.data)
+
+    # photographer stats
+    @action(
+        detail=False, methods=["get"], permission_classes=[IsAuthenticated, IsVerified]
+    )
+    def my_stats(self, request):
+        from django.db.models import Sum, Count
+
+        total_uploads = Photo.objects.filter(uploaded_by=request.user).count()
+        total_downloads = (
+            Photo.objects.filter(uploaded_by=request.user).aggregate(total=Sum("download_count"))[
+                "total"
+            ] or 0
+        )
+        total_favorites = PhotoFavorite.objects.filter(photo__uploaded_by=request.user).count()
+
+        return Response(
+            {
+                "total_uploads": total_uploads,
+                "total_downloads": total_downloads,
+                "total_favorites": total_favorites,
+            }
+        )
 
     # add tagged user
     @action(

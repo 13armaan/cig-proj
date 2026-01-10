@@ -7,9 +7,28 @@ export default function Profile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [IsAdmin, setIsAdmin] = useState(false);
+    const [IsPhotographer, setIsPhotographer] = useState(false);
+
+    const fetchRole = async () => {
+        const res = await api.get("/accounts/role/");
+        setIsAdmin(
+            res.data.roles?.includes("Admin")
+
+        );
+        setIsPhotographer(
+            res.data.roles?.includes("Photographer")
+        );
+        // console.log(IsAdmin);
+
+
+
+
+    };
 
     useEffect(() => {
         fetchUserProfile();
+        fetchRole();
     }, []);
 
     const fetchUserProfile = async () => {
@@ -39,25 +58,28 @@ export default function Profile() {
                     <div className="navbar-content">
                         <h1 className="navbar-logo">Smart Event Photos</h1>
                         <div className="navbar-links">
-                            <button 
+                            <button
                                 className="navbar-btn"
                                 onClick={() => navigate("/gallery")}
                             >
                                 Gallery
                             </button>
-                            <button 
-                                className="navbar-btn"
-                                onClick={() => navigate("/upload")}
-                            >
-                                Photographer Dashboard
-                            </button>
-                            <button 
+                            {(IsAdmin || IsPhotographer) && (
+                                <button
+                                    className="navbar-btn"
+                                    onClick={() => navigate("/upload")}
+                                >
+                                    Photographer Dashboard
+                                </button>
+                            )}
+
+                            <button
                                 className="navbar-btn active"
                                 onClick={() => navigate("/profile")}
                             >
                                 Profile
                             </button>
-                            <button 
+                            <button
                                 className="navbar-btn logout-btn"
                                 onClick={handleLogout}
                             >
@@ -79,25 +101,28 @@ export default function Profile() {
                 <div className="navbar-content">
                     <h1 className="navbar-logo">Smart Event Photos</h1>
                     <div className="navbar-links">
-                        <button 
+                        <button
                             className="navbar-btn"
                             onClick={() => navigate("/gallery")}
                         >
                             Gallery
                         </button>
-                        <button 
-                            className="navbar-btn"
-                            onClick={() => navigate("/upload")}
-                        >
-                            Photographer Dashboard
-                        </button>
-                        <button 
+                        {(IsAdmin || IsPhotographer) && (
+                            <button
+                                className="navbar-btn"
+                                onClick={() => navigate("/upload")}
+                            >
+                                Photographer Dashboard
+                            </button>
+                        )}
+
+                        <button
                             className="navbar-btn active"
                             onClick={() => navigate("/profile")}
                         >
                             Profile
                         </button>
-                        <button 
+                        <button
                             className="navbar-btn logout-btn"
                             onClick={handleLogout}
                         >
@@ -108,7 +133,7 @@ export default function Profile() {
             </nav>
             <div className="profile-card">
                 <h2>User Profile</h2>
-                
+
                 <div className="profile-info">
                     <div className="profile-field">
                         <label>Username</label>

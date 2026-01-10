@@ -20,6 +20,7 @@ export default function Albums() {
     const [loading, setLoading] = useState(true);
 
     const [IsAdmin, setIsAdmin] = useState(false);
+    const [IsPhotographer, setIsPhotographer] = useState(false);
     const [EditingAlbum, setEditingAlbum] = useState(false);
     const [Me, setMe] = useState(null);
     /* ---------------- FETCH IsAdmin ---------------- */
@@ -30,7 +31,12 @@ export default function Albums() {
             res.data.roles?.includes("Admin")
 
         );
+        setIsPhotographer(
+            res.data.roles?.includes("Photographer")
+        );
         // console.log(IsAdmin);
+
+
 
 
     };
@@ -81,7 +87,7 @@ export default function Albums() {
         fetchUsers();
         fetchRole();
         fetchMe();
-
+        
     }, []);
 
     /* ---------------- CREATE ALBUM ---------------- */
@@ -154,7 +160,7 @@ export default function Albums() {
             await api.patch(`/albums/${EditingAlbum.album_id}/`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-             setTitle("");
+            setTitle("");
             setDescription("");
             setStartDate("");
             setEndDate("");
@@ -179,25 +185,28 @@ export default function Albums() {
                 <div className="navbar-content">
                     <h1 className="navbar-logo">Smart Event Photos</h1>
                     <div className="navbar-links">
-                        <button 
+                        <button
                             className="navbar-btn active"
                             onClick={() => navigate("/albums")}
                         >
                             Gallery
                         </button>
-                        <button 
-                            className="navbar-btn"
-                            onClick={() => navigate("/upload")}
-                        >
-                            Photographer Dashboard
-                        </button>
-                        <button 
+                        {(IsAdmin || IsPhotographer) && (
+                            <button
+                                className="navbar-btn"
+                                onClick={() => navigate("/upload")}
+                            >
+                                Photographer Dashboard
+                            </button>
+                        )}
+
+                        <button
                             className="navbar-btn"
                             onClick={() => navigate("/profile")}
                         >
                             Profile
                         </button>
-                        <button 
+                        <button
                             className="navbar-btn logout-btn"
                             onClick={handleLogout}
                         >

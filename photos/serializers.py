@@ -41,5 +41,6 @@ class PhotoListSerializer(serializers.ModelSerializer):
             "photo_id",
             "thumbnail_img",
             "is_processed",
+            "download_count",
         ]
     
