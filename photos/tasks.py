@@ -118,8 +118,8 @@ from .models import Photo, Tag
 def auto_tag_photo(photo_id):
     # imported inside ML worker for compatibility with the venv_ml
     import numpy as np # type: ignore
-    from tensorflow.keras.applications.mobilenet_v2 import ( # type: ignore
-        MobileNetV2,
+    from tensorflow.keras.applications.efficientnet_v2 import ( # type: ignore
+        EfficientNetV2B3,
         preprocess_input,
         decode_predictions
     )
@@ -127,7 +127,7 @@ def auto_tag_photo(photo_id):
 
     # Load model lazily (cached per worker process)
     if not hasattr(auto_tag_photo, "model"):
-        auto_tag_photo.model = MobileNetV2(weights="imagenet")
+        auto_tag_photo.model = EfficientNetV2B3(weights="imagenet")
 
     model = auto_tag_photo.model
 
@@ -136,7 +136,7 @@ def auto_tag_photo(photo_id):
     except Photo.DoesNotExist:
         return "Photo not found"
 
-    img = image.load_img(photo.original_img.path, target_size=(224, 224))
+    img = image.load_img(photo.original_img.path, target_size=(300, 300))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
