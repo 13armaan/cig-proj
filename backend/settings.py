@@ -185,7 +185,7 @@ OMNIPORT_USERINFO_URL = "https://channeli.in/open_auth/get_user_data/"
 
 
 #Celery setup
-CELERY_BROKER_URL = "redis://localhost:6380/0"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 
@@ -201,7 +201,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6380)],
+            "hosts": [("127.0.0.1", 6379)],
         },
     }
 }

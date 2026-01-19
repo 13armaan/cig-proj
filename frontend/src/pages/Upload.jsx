@@ -370,8 +370,8 @@ function Upload() {
                             </div>
                         )}
 
-                        <select 
-                            value={album} 
+                        <select
+                            value={album}
                             onChange={(e) => setAlbum(e.target.value)}
                             className="form-select"
                         >
@@ -408,7 +408,7 @@ function Upload() {
                             className="form-input"
                         />
 
-                        <button 
+                        <button
                             type="submit"
                             disabled={loading || previews.length === 0}
                             className="btn-primary"
@@ -428,19 +428,19 @@ function Upload() {
                             <>
                                 <div className="upload-grid">
                                     {myUploads.map((p) => (
-                                        <div 
-                                            key={p.photo_id} 
+                                        <div
+                                            key={p.photo_id}
                                             className="upload-card"
                                             onClick={() => fetchPhotoDetail(p.photo_id)}
                                             style={{ cursor: "pointer" }}
                                         >
-                                            <img 
-                                                loading="lazy" 
-                                                src={p.thumbnail_img || "/placeholder.jpg"} 
-                                                alt="thumb" 
+                                            <img
+                                                loading="lazy"
+                                                src={p.thumbnail_img || "/placeholder.jpg"}
+                                                alt="thumb"
                                                 className="upload-thumb"
                                             />
-                                            
+
                                         </div>
                                     ))}
                                 </div>
@@ -473,103 +473,152 @@ function Upload() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-body">
-
-                            <img
-                                src={selectedPhoto.original_img}
-                                className="modal-image"
-                                alt=""
-                            />
-
-                            {/* FAV */}
-                            <button
-                                className="favorite-btn"
-                                onClick={isFavorite ? handleUnfavorite : handleFavorite}
-                            >
-                                {isFavorite ? "★ Favorited" : "☆ Add to Favorites"}
-                            </button>
-                            {/* TAGS */}
-
-                            <div className="tags">
-                                {selectedPhoto.tags?.map(tag => (
-                                    <span key={tag.id} className="tag">
-                                        {tag.name}
-                                        <button onClick={() => removeTag(tag.name)}>×</button>
-                                    </span>
-                                ))}
-                            </div>
-
-                            {/* {TAGGED USERS} */}
-                            {/* TAGGED USERS */}
-                            {selectedPhoto.users_tagged.map((u) => (
-                                <span key={u.id} className="tag">
-                                    {u.email}
-                                    <button onClick={() => removeUserTag(u.id)}>×</button>
-                                </span>
-                            ))}
-
-                            <select
-                                value={selectedUser}
-                                onChange={(e) => setSelectedUser(e.target.value)}
-                            >
-                                <option value="">Tag a user</option>
-                                {users.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.email}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <button onClick={addUserTag}>Add</button>
-
-                            {/* COMMENTS */}
-                            <div className="comments-section">
-                                <h4>Comments</h4>
-
-                                <div className="comments-list">
-                                    {comments.length === 0 && (
-                                        <p className="no-comments">No comments yet</p>
-                                    )}
-
-                                    {comments.map((comment) => (
-                                        <div key={comment.id} className="comment">
-                                            <strong>{comment.user}</strong>
-                                            <p>{comment.content}</p>
-                                            <span className="comment-time">
-                                                {new Date(comment.created_at).toLocaleString()}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* tags INPUT (ENTER ONLY) */}
-                            <input
-                                className="tag-input"
-                                placeholder="Add tag and press Enter"
-                                value={tagInput}
-                                onChange={(e) => setTagInput(e.target.value)}
-                                onKeyDown={handleTagKeyDown}
-                                autoFocus
-                            />
-                            {/* Comments INPUT (ENTER ONLY) */}
-                            <div className="comment-input">
-                                <input
-                                    type="text"
-                                    placeholder="Add a comment..."
-                                    value={commentInput}
-                                    onChange={(e) => setCommentInput(e.target.value)}
-                                    onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+                            {/* LEFT - Image */}
+                            <div className="modal-left">
+                                <img
+                                    src={selectedPhoto.original_img}
+                                    className="modal-image"
+                                    alt=""
                                 />
                             </div>
-                            <button
-                                onClick={() =>
-                                    window.location.href =
-                                    `http://127.0.0.1:8000/api/photos/${selectedPhoto.photo_id}/download/`
-                                }
-                            >
-                                Download
-                            </button>
 
+                            {/* RIGHT - All Controls */}
+                            <div className="modal-right">
+                                {/* Top Actions */}
+                                <div className="modal-top-actions">
+                                    <button
+                                        className={`action-btn favorite-btn ${isFavorite ? 'active' : ''}`}
+                                        onClick={isFavorite ? handleUnfavorite : handleFavorite}
+                                        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                                    >
+                                        {isFavorite ? "♥" : "♡"}
+                                    </button>
+
+                                    <button
+                                        className="action-btn download-btn"
+                                        onClick={() =>
+                                            window.location.href =
+                                            `http://127.0.0.1:8000/api/photos/${selectedPhoto.photo_id}/download/`
+                                        }
+                                        title="Download"
+                                    >
+                                        ⬇
+                                    </button>
+                                </div>
+
+                                {/* Scrollable Content */}
+                                <div className="modal-scroll-content">
+
+                                    {/* TAGGED USERS SECTION */}
+                                    <div className="modal-section">
+                                        <h4>Tagged users</h4>
+                                        <div className="tags">
+                                            {selectedPhoto.users_tagged?.length > 0 ? (
+                                                selectedPhoto.users_tagged.map((u) => (
+                                                    <span key={u.id} className="tag">
+                                                        {u.email}
+                                                        <button onClick={() => removeUserTag(u.id)}>×</button>
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <p className="no-tags">No users tagged</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                        {/* TAG SOMEONE SECTION */}
+                                        < div className="modal-section">
+                                            <h4>Tag someone</h4>
+                                            <select
+                                                className="modal-select"
+                                                value={selectedUser}
+                                                onChange={(e) => setSelectedUser(e.target.value)}
+                                            >
+                                                <option value="">enter email address</option>
+                                                {users.map((u) => (
+                                                    <option key={u.id} value={u.id}>
+                                                        {u.email}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                className="modal-tag-btn"
+                                                onClick={addUserTag}
+                                                disabled={!selectedUser}
+                                            >
+                                                Tag
+                                            </button>
+                                        </div>
+                                    
+                                    {/* TAGS SECTION */}
+                                    <div className="modal-section">
+                                        <h4>Tags</h4>
+                                        <div className="tags">
+                                            {selectedPhoto.tags?.length > 0 ? (
+                                                selectedPhoto.tags.map(tag => (
+
+                                                    <span key={tag.id} className="tag">
+                                                        {tag.name}
+                                                        
+                                                            <button onClick={() => removeTag(tag.name)}>×</button>
+                                                    </span>
+
+                                                ))
+                                            ) : (
+                                                <p className="no-tags">No tags</p>
+                                            )}
+                                        </div>
+                                        
+                                            <input
+                                                className="modal-tag-input"
+                                                placeholder="Add tag and press Enter"
+                                                value={tagInput}
+                                                onChange={(e) => setTagInput(e.target.value)}
+                                                onKeyDown={handleTagKeyDown}
+                                            />
+                                    </div>
+
+                                    {/* COMMENTS SECTION */}
+                                    <div className="modal-section">
+                                        <h4>Comments</h4>
+                                        <div className="comments-list">
+                                            {comments.length === 0 ? (
+                                                <p className="no-comments">No comments yet</p>
+                                            ) : (
+                                                comments.map((comment) => (
+                                                    <div key={comment.id} className="comment">
+                                                        <strong>{comment.user}</strong>
+                                                        <p>{comment.content}</p>
+                                                        <span className="comment-time">
+                                                            {new Date(comment.created_at).toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                        <div className="comment-input-group">
+                                            <input
+                                                type="text"
+                                                className="modal-comment-input"
+                                                placeholder="Add a comment"
+                                                value={commentInput}
+                                                onChange={(e) => setCommentInput(e.target.value)}
+                                                onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+                                            />
+                                            <button
+                                                className="modal-send-btn"
+                                                onClick={handleAddComment}
+                                            >
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

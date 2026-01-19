@@ -15,12 +15,12 @@ def get_user_from_jwt(token):
        
         user = jwt_auth.get_user(validated_token)
 
-        print(f"✅ User authenticated: {user.email}")
+        print(f"User authenticated: {user.email}")
         
         return user
     except Exception as e:
        
-        print(f"❌ JWT validation failed: {e}")
+        print(f"JWT validation failed: {e}")
         return AnonymousUser()
 
 class JWTAuthMiddleware:
@@ -38,23 +38,23 @@ class JWTAuthMiddleware:
         # Extract token from query string
         query_string = scope.get("query_string", b"").decode()
         
-        print(f"🔄 WebSocket handshake - Query: {query_string[:100]}...")
+        print(f"WebSocket handshake - Query: {query_string[:100]}...")
         
         if "token=" in query_string:
             try:
                 # Parse token from query string
                 token = query_string.split("token=")[1]
                 
-                print(f"🔄 Found token={token}")
+                print(f"Found token={token}")
                 
                 # Authenticate user
                 user = await get_user_from_jwt(token)
                 scope["user"] = user
             except Exception as e:
                 
-                print(f"❌ Failed to extract token: {e}")
+                print(f"Failed to extract token: {e}")
         else:
             
-            print(f"⚠️ No token found in query string")
+            print(f"No token found in query string")
 
         return await self.inner(scope, receive, send)

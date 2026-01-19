@@ -263,89 +263,317 @@
 }
 
 /* MODAL OVERLAY */
-.photo-modal-overlay {
+.modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
-  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
-.photo-modal-content {
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 900px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
-  border: 1px solid #2a2a2a;
-  position: relative;
-}
-
-.modal-close-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  color: #bbb;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 2010;
-  transition: color 0.3s;
-}
-
-.modal-close-btn:hover {
-  color: #fff;
-}
-
-.modal-layout {
+.modal-content {
+  background: #1b1b1b;
+  border-radius: 16px;
+  max-width: 1000px;
+  width: 95%;
+  max-height: 90vh;
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.modal-photo {
-  flex: 0 0 50%;
+.modal-body {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100%;
+  overflow: hidden;
 }
 
-.modal-photo img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+/* LEFT - Image */
+.modal-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f0f;
+  border-radius: 12px;
+  overflow: auto;
 }
 
-.modal-details {
-  flex: 1;
+.modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* RIGHT - Controls */
+.modal-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Top Actions Bar */
+.modal-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 16px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
   color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.modal-details h4 {
+.action-btn:hover {
+  color: #9c7edd;
+}
+
+.favorite-btn.active {
+  color: #ff6b6b;
+}
+
+.action-count {
+  color: #888;
+  font-size: 14px;
+}
+
+.action-divider {
+  color: #999;
+  font-size: 18px;
+}
+
+/* Scrollable Content */
+.modal-scroll-content {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 8px;
+}
+
+.modal-scroll-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll-content::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+.modal-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Sections */
+.modal-section {
+  margin-bottom: 20px;
+}
+
+.modal-section h4 {
   margin: 0 0 12px 0;
   font-size: 14px;
-  color: #ddd;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #ccc;
 }
 
-.tag-badge {
-  background: #6200ea;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+/* Select Field */
+.modal-select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #888;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.3s;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.tag-badge:hover {
-  background: #7c3ade;
+.modal-select:focus {
+  border-color: #9c7edd;
+}
+
+.modal-select option {
+  background: #1b1b1b;
+  color: #fff;
+}
+
+/* Tag Button */
+.modal-tag-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #9c7edd;
+  background: #9c7edd;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-tag-btn:hover:not(:disabled) {
+  background: #8a6cc9;
+  border-color: #8a6cc9;
+}
+
+.modal-tag-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Comments Section */
+.comments-list {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 4px;
+}
+
+.comments-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 2px;
+}
+
+.comment {
+  padding: 8px 0;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 8px;
+}
+
+.comment strong {
+  color: #9c7edd;
+  font-size: 12px;
+}
+
+.comment p {
+  margin: 4px 0;
+  color: #ccc;
+  font-size: 12px;
+}
+
+.comment-time {
+  font-size: 11px;
+  color: #666;
+}
+
+.no-comments {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Comment Input Group */
+.comment-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-comment-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.modal-comment-input:focus {
+  border-color: #9c7edd;
+}
+
+.modal-send-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #9c7edd;
+  background: #9c7edd;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.modal-send-btn:hover {
+  background: #8a6cc9;
+  border-color: #8a6cc9;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 24px;
+}
+
+.tag {
+  background: #e8deff;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  color: #333;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.tag button:hover {
+  opacity: 0.6;
+}
+
+.no-tags {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Tag Input */
+.modal-tag-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.modal-tag-input:focus {
+  border-color: #9c7edd;
 }
 
 .comments-list {
