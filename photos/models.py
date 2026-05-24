@@ -19,7 +19,6 @@ class Photo(models.Model):
     is_processed = models.BooleanField(default=False)
     original_img = models.ImageField(upload_to="originals/")
     thumbnail_img = models.ImageField(upload_to="thumbnails/", null=True, blank=True)
-    watermark_img = models.ImageField(upload_to="watermarks/", null=True, blank=True)
 
   
     tags = models.ManyToManyField(Tag, blank=True, related_name="photos")
