@@ -1,4 +1,4 @@
-# Smart Event Photo Management Platform
+# SnapSync
 
 A comprehensive web application for managing and sharing event photos with AI-powered tagging, real-time notifications, and collaborative features.
 
@@ -71,7 +71,7 @@ A comprehensive web application for managing and sharing event photos with AI-po
 ### 1. Clone the Repository
 ```bash
 git clone <repository-url>
-cd Smart-Event-Photo-Management-Platform
+cd SnapSync
 ```
 
 ### 2. Backend Setup
@@ -170,7 +170,7 @@ The application will be available at:
 ##  Project Structure
 
 ```
-Smart-Event-Photo-Management-Platform/
+SnapSync/
 ├── accounts/              # User authentication & management
 │   ├── models.py         # User, Role, EmailOTP models
 │   ├── views.py          # Auth endpoints (login, signup, OTP)

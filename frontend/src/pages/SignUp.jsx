@@ -49,7 +49,7 @@ export default function Signup() {
         <div className="auth-container">
             <div className="auth-box">
                 <h2>Create Account</h2>
-                <p className="auth-subtitle">Join Smart Event Photos</p>
+                <p className="auth-subtitle">Join SnapSync</p>
 
                 <div className="form-group">
                     <label htmlFor="username">Username</label>

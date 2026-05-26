@@ -99,7 +99,7 @@ export default function Navbar({ active }) {
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        <h1 className="navbar-logo">Smart Event Photos</h1>
+        <h1 className="navbar-logo">SnapSync</h1>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ position: "relative" }}>
