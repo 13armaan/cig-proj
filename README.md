@@ -142,14 +142,24 @@ redis-server
 
 ### Start Backend Services
 
-####  Django Server
+Open **three** separate terminal windows and start the following services:
+
+####  Django Server (Terminal 1)
 ```bash
+source venv/bin/activate
 python manage.py runserver
 ```
 
-####  Celery Worker
+####  Default Celery Worker - Thumbnails & General Tasks (Terminal 2)
 ```bash
+source venv/bin/activate
 celery -A backend worker --loglevel=info
+```
+
+####  ML Celery Worker - AI Tagging (Terminal 3)
+```bash
+source venv_ml/bin/activate
+celery -A backend worker -Q ml --loglevel=info
 ```
 
 
