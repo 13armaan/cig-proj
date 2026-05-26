@@ -1,5 +1,5 @@
 from celery import shared_task
-from PIL import Image
+from PIL import Image, ExifTags
 from django.core.files.base import ContentFile
 from io import BytesIO
 
@@ -11,6 +11,27 @@ def generate_thumbnail(photo_id):
     photo = Photo.objects.get(photo_id=photo_id)
 
     base_img = Image.open(photo.original_img)
+    
+    # Extract EXIF metadata
+    exif_data = {}
+    try:
+        raw_exif = base_img.getexif()
+        if raw_exif:
+            for tag_id, value in raw_exif.items():
+                tag = ExifTags.TAGS.get(tag_id, tag_id)
+                # Ignore byte data which cannot be serialized to JSON
+                if isinstance(value, bytes):
+                    continue
+                # Cast tuples/custom objects to string
+                if isinstance(value, (int, float, str, bool)):
+                    exif_data[tag] = value
+                else:
+                    exif_data[tag] = str(value)
+    except Exception:
+        pass
+
+    photo.metadata = exif_data
+
     #if we have png or other img type
 
     if base_img.mode in ("RGBA", "P"):
