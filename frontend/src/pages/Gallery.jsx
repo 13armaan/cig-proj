@@ -600,6 +600,20 @@ export default function Gallery() {
                   />)}
                 </div>
 
+                {/* METADATA SECTION */}
+                {selectedPhoto.metadata && Object.keys(selectedPhoto.metadata).length > 0 && typeof selectedPhoto.metadata === 'object' && (
+                  <div className="modal-section">
+                    <h4>Photo Details</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", fontSize: "14px", color: "#ddd" }}>
+                      {Object.entries(selectedPhoto.metadata).slice(0, 10).map(([key, value]) => (
+                        <div key={key}>
+                          <span style={{ fontWeight: "bold", color: "#aaa" }}>{key}: </span>
+                          <span>{value?.toString()?.substring(0, 30)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* COMMENTS SECTION */}
                 <div className="modal-section">
@@ -636,17 +650,12 @@ export default function Gallery() {
                     </button>
                   </div>
                 </div>
-
-
-
-
+                </div>
               </div>
             </div>
           </div>
         </div>
-        </div>
-  )
-}
-    </div >
+      )}
+    </div>
   );
 }
