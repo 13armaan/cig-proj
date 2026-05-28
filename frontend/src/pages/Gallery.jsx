@@ -390,6 +390,16 @@ export default function Gallery() {
                             day: 'numeric'
                           })}
                         </span>
+                        
+                        <div style={{ marginTop: '15px' }}>
+                          <button 
+                            className="load-more-btn"
+                            onClick={() => window.location.href = `http://127.0.0.1:8000/api/albums/${selectedAlbum.album_id}/download_all/`}
+                            title="Download all photos in this album as ZIP"
+                          >
+                            Download Album (ZIP)
+                          </button>
+                        </div>
 
                         {/* <button 
                           className="change-album-btn"
