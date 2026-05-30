@@ -40,6 +40,7 @@ class PhotoListSerializer(serializers.ModelSerializer):
         fields = [
             "photo_id",
             "thumbnail_img",
+            "original_img",
             "is_processed",
             "download_count",
         ]

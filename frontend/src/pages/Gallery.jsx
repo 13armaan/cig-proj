@@ -463,7 +463,7 @@ export default function Gallery() {
                   }}
                 >
                   <img
-                    src={photo.thumbnail_img}
+                    src={photo.thumbnail_img || photo.original_img}
                     className="gallery-img"
                     alt=""
                   />
