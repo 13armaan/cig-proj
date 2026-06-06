@@ -244,11 +244,49 @@ class PhotoViewSet(viewsets.ModelViewSet):
                 # non-fatal if increment fails
                 pass
 
-            return FileResponse(
-                photo.original_img.open("rb"),
-                as_attachment=True,
-                filename=f"photo_{photo.photo_id}_original.jpg",
-            )
+            # Dynamic Watermark Logic
+            try:
+                from PIL import Image, ImageDraw, ImageFont
+                import io
+
+                with photo.original_img.open('rb') as f:
+                    img = Image.open(f).convert("RGBA")
+                    
+                # Create a transparent overlay for watermarks
+                txt = Image.new('RGBA', img.size, (255, 255, 255, 0))
+                draw = ImageDraw.Draw(txt)
+                
+                club_name = "SnapSync"
+                event_name = photo.album.title if photo.album else "Event"
+                user_role = request.user.role.name if getattr(request.user, "role", None) else "User"
+                
+                watermark_text = f"{club_name} | {event_name} | {user_role}"
+                
+                # Draw text at bottom right margin
+                width, height = img.size
+                margin = 20
+                draw.text((margin, height - margin - 20), watermark_text, fill=(255, 255, 255, 180))
+                
+                out = Image.alpha_composite(img, txt)
+                out = out.convert("RGB")
+                
+                buffer = io.BytesIO()
+                out.save(buffer, format="JPEG")
+                buffer.seek(0)
+                
+                return FileResponse(
+                    buffer,
+                    as_attachment=True,
+                    filename=f"photo_{photo.photo_id}_watermarked.jpg",
+                )
+            except Exception as e:
+                logger.error(f"Watermark failed: {e}")
+                # Fallback to original
+                return FileResponse(
+                    photo.original_img.open("rb"),
+                    as_attachment=True,
+                    filename=f"photo_{photo.photo_id}_original.jpg",
+                )
 
         return Response(
             {"error": "Original image not available"}, status=status.HTTP_404_NOT_FOUND

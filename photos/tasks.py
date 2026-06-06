@@ -84,7 +84,8 @@ def auto_tag_photo(photo_id):
     except Photo.DoesNotExist:
         return "Photo not found"
 
-    img = image.load_img(photo.original_img.path, target_size=(300, 300))
+    with photo.original_img.open('rb') as f:
+        img = image.load_img(BytesIO(f.read()), target_size=(300, 300))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
