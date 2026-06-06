@@ -20,6 +20,9 @@ class User(AbstractUser):
         related_name="users",
         blank=True
     )
+    
+    reference_selfie = models.ImageField(upload_to="selfies/", null=True, blank=True)
+    face_encoding = models.JSONField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']   #required internally
